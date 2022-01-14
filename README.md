@@ -1,5 +1,5 @@
 - 👋 Hi, I’m @Syh114514
-- 👀 I’m interested in learning how to hammer code efficiently.
+- 👀 I’m interested in learning how to program efficiently.
 - 🌱 I’m currently learning Python and C++.
 - 📫 My QQ number is 1283117490.
 I'm willing to chat with everyone who wants to discuss about knowledge of program and code.
