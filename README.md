@@ -1,7 +1,7 @@
 - 👋 Hi, I’m @Syh114514
 - 👀 I’m interested in learning how to program efficiently.
 - 🌱 I’m currently learning Python and C++.
-- 📫 My QQ number is 1283117490.
+- 📫 My QQ number is 1283117490.Welcome to talk with me.
 - I'm willing to chat with everyone who wants to discuss about knowledge of program and code.
 
 <!---
