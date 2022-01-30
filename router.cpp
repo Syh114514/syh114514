@@ -4,7 +4,7 @@
 using namespace std;
 int count1=0;								//规则计数器  
 int count2=0;								//数据计数器  
-typedef struct ruleip{						//规则集IP地址 
+typedef struct ruleip{							//规则集IP地址 
 	char at;
 	int fst;
 	char dot1;
@@ -16,26 +16,26 @@ typedef struct ruleip{						//规则集IP地址
 	char slash;
 	int bit;
 } rule_ip;
-typedef struct ruleset{						//规则集 
+typedef struct ruleset{							//规则集 
 	rule_ip ip1,ip2;						//规则集原IP、目的IP
-	char colon1,colon2,slash2;				//冒号1、冒号2、斜杠 
-	int rule_port1,rule_port2,rule3,rule4; 	//规则集源端口、目的端口  
-	int rule_protocol1,rule_protocol2;		//规则集协议
+	char colon1,colon2,slash2;					//冒号1、冒号2、斜杠 
+	int rule_port1,rule_port2,rule3,rule4; 				//规则集源端口、目的端口  
+	int rule_protocol1,rule_protocol2;				//规则集协议
 } rule_set;
-typedef struct dataset{						//数据集 
+typedef struct dataset{							//数据集 
 	long long ip1,ip2;						//数据集原IP、目的IP
-	int data_port1,data_port2;				//数据源、目的端口
+	int data_port1,data_port2;					//数据源、目的端口
 	int data_protocol;						//数据集协议
 } data_set;
 ifstream infile;							//文件输入
 ofstream outfile;							//文件输出 
-void input_rule(rule_set rule[]);			//规则集输入函数
-void input_data(data_set data[]);			//数据集输入函数
-void output(rule_set rule[],data_set data[]);//输出函数 
-long long rule_dec(rule_ip k);				//规则集IP地址二进制转换函数
-int fit(long long num1,long long num2);		//IP地址匹配函数 
-int port(int port1,int port2,int port3);	//端口匹配函数 
-int protocol(int pro1,int pro2,int pro3);	//协议匹配函数 
+void input_rule(rule_set rule[]);					//规则集输入函数
+void input_data(data_set data[]);					//数据集输入函数
+void output(rule_set rule[],data_set data[]);				//输出函数 
+long long rule_dec(rule_ip k);						//规则集IP地址二进制转换函数
+int fit(long long num1,long long num2);					//IP地址匹配函数 
+int port(int port1,int port2,int port3);				//端口匹配函数 
+int protocol(int pro1,int pro2,int pro3);				//协议匹配函数 
 int main(){ 								//主函数 
 	rule_set rule[1000];
 	data_set data[30000];
@@ -44,7 +44,7 @@ int main(){ 								//主函数
 	output(rule,data);
 	return 0;
 }
-void input_rule(rule_set rule[]){			//规则集输入函数 
+void input_rule(rule_set rule[]){					//规则集输入函数 
 	infile.open("rule1.txt");
 	if(!infile.is_open()){
 		cout<<"文件打开失败"<<endl;
@@ -87,7 +87,7 @@ void input_rule(rule_set rule[]){			//规则集输入函数
 	}
 	infile.close();
 }
-void input_data(data_set data[]){			//数据集输入函数
+void input_data(data_set data[]){					//数据集输入函数
 	infile.open("packet1.txt");
 	if(!infile.is_open()){
 		cout<<"文件打开失败"<<endl;
@@ -107,7 +107,7 @@ void input_data(data_set data[]){			//数据集输入函数
 	}
 	infile.close();
 } 
-void output(rule_set rule[],data_set data[]){
+void output(rule_set rule[],data_set data[]){				//输出函数 
 	outfile.open("ans1.txt");
 	if(!outfile.is_open()){
 		cout<<"文件打开失败！"<<endl;
@@ -125,7 +125,7 @@ void output(rule_set rule[],data_set data[]){
 	}
 	outfile.close();
 }
-long long rule_dec(rule_ip k){				//规则集IP地址二进制转换函数
+long long rule_dec(rule_ip k){						//规则集IP地址二进制转换函数
 	int rule[32]; 
 	for(int i=31;i>=24;i--){
 		rule[i]=k.fth%2;
@@ -150,15 +150,15 @@ long long rule_dec(rule_ip k){				//规则集IP地址二进制转换函数
 	}
 	return dec;
 }
-int fit(long long num1,long long num2){		//IP地址匹配函数 
+int fit(long long num1,long long num2){					//IP地址匹配函数 
 	if(num1==num2) return 1;
 	else return 0;
 }
-int port(int port1,int port2,int port3){	//端口匹配函数 
+int port(int port1,int port2,int port3){				//端口匹配函数 
 	if(port3>=port1&&port3<=port2) return 1;
 	else return 0;
 }
-int protocol(int pro1,int pro2,int pro3){	//协议匹配函数 
+int protocol(int pro1,int pro2,int pro3){				//协议匹配函数 
 	switch(pro2){
 		case 0x00:
 			return 1;
