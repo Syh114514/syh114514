@@ -2,9 +2,9 @@
 #include<string.h>
 #include<fstream>
 using namespace std;
-char rule1[33],rule2[33];					//È«¾Ö±äÁ¿£¨¶ş½øÖÆ¹æÔò¼¯IP£© 
-char data1[33],data2[33];					//È«¾Ö±äÁ¿£¨¶ş½øÖÆÊı¾İ¼¯IP£© 
-typedef struct ruleip{						//¹æÔò¼¯IPµØÖ· 
+int count1=0;								//è§„åˆ™è®¡æ•°å™¨  
+int count2=0;								//æ•°æ®è®¡æ•°å™¨  
+typedef struct ruleip{						//è§„åˆ™é›†IPåœ°å€ 
 	char at;
 	int fst;
 	char dot1;
@@ -16,154 +16,149 @@ typedef struct ruleip{						//¹æÔò¼¯IPµØÖ·
 	char slash;
 	int bit;
 } rule_ip;
-typedef struct ruleset{						//¹æÔò¼¯ 
-	rule_ip ip1,ip2;						//¹æÔò¼¯Ô­IP¡¢Ä¿µÄIP
-	char colon1,colon2,slash2;				//Ã°ºÅ1¡¢Ã°ºÅ2¡¢Ğ±¸Ü 
-	int rule_port1,rule_port2,rule3,rule4; 	//¹æÔò¼¯Ô´¶Ë¿Ú¡¢Ä¿µÄ¶Ë¿Ú  
-	int rule_protocol1,rule_protocol2;		//¹æÔò¼¯Ğ­Òé
+typedef struct ruleset{						//è§„åˆ™é›† 
+	rule_ip ip1,ip2;						//è§„åˆ™é›†åŸIPã€ç›®çš„IP
+	char colon1,colon2,slash2;				//å†’å·1ã€å†’å·2ã€æ–œæ  
+	int rule_port1,rule_port2,rule3,rule4; 	//è§„åˆ™é›†æºç«¯å£ã€ç›®çš„ç«¯å£  
+	int rule_protocol1,rule_protocol2;		//è§„åˆ™é›†åè®®
 } rule_set;
-typedef struct dataset{						//Êı¾İ¼¯ 
-	long long ip1,ip2;						//Êı¾İ¼¯Ô­IP¡¢Ä¿µÄIP
-	int data_port1,data_port2;				//Êı¾İÔ´¡¢Ä¿µÄ¶Ë¿Ú
-	int data_protocol;						//Êı¾İ¼¯Ğ­Òé
+typedef struct dataset{						//æ•°æ®é›† 
+	long long ip1,ip2;						//æ•°æ®é›†åŸIPã€ç›®çš„IP
+	int data_port1,data_port2;				//æ•°æ®æºã€ç›®çš„ç«¯å£
+	int data_protocol;						//æ•°æ®é›†åè®®
 } data_set;
-ifstream infile;							//¶ÁÈëÊ½ÎÄ¼şÊäÈë 
-void input_rule(rule_set rule[]);			//¹æÔò¼¯ÊäÈëº¯Êı
-void input_data(data_set data[]);			//Êı¾İ¼¯ÊäÈëº¯Êı
-void rule_binary(rule_ip k);				//¹æÔò¼¯IPµØÖ·¶ş½øÖÆ×ª»»º¯Êı 
-void data_binary(long long k);				//Êı¾İ¼¯IPµØÖ·¶ş½øÖÆ×ª»»º¯Êı
-int match(char k1[],char k2[]);				//IPµØÖ·Æ¥Åäº¯Êı 
-int port(int port1,int port2,int port3);	//¶Ë¿ÚÆ¥Åäº¯Êı 
-int protocol(int pro1,int pro2,int pro3);	//Ğ­ÒéÆ¥Åäº¯Êı 
-int main(){ 								//Ö÷º¯Êı 
+ifstream infile;							//æ–‡ä»¶è¾“å…¥
+ofstream outfile;							//æ–‡ä»¶è¾“å‡º 
+void input_rule(rule_set rule[]);			//è§„åˆ™é›†è¾“å…¥å‡½æ•°
+void input_data(data_set data[]);			//æ•°æ®é›†è¾“å…¥å‡½æ•°
+void output(rule_set rule[],data_set data[]);//è¾“å‡ºå‡½æ•° 
+long long rule_dec(rule_ip k);				//è§„åˆ™é›†IPåœ°å€äºŒè¿›åˆ¶è½¬æ¢å‡½æ•°
+int fit(long long num1,long long num2);		//IPåœ°å€åŒ¹é…å‡½æ•° 
+int port(int port1,int port2,int port3);	//ç«¯å£åŒ¹é…å‡½æ•° 
+int protocol(int pro1,int pro2,int pro3);	//åè®®åŒ¹é…å‡½æ•° 
+int main(){ 								//ä¸»å‡½æ•° 
 	rule_set rule[1000];
 	data_set data[30000];
+	input_rule(rule);
+	input_data(data);
+	output(rule,data);
 	return 0;
 }
-void input_rule(rule_set rule[]){			//¹æÔò¼¯ÊäÈëº¯Êı 
+void input_rule(rule_set rule[]){			//è§„åˆ™é›†è¾“å…¥å‡½æ•° 
 	infile.open("rule1.txt");
 	if(!infile.is_open()){
-		cout<<"ÎÄ¼ş´ò¿ªÊ§°Ü"<<endl;
+		cout<<"æ–‡ä»¶æ‰“å¼€å¤±è´¥"<<endl;
 		system("pause");
 		exit(-1);
 	}
-	int count=0;			//¼ÆÊıÆ÷ 
 	while(1){
-		infile>>rule[count].ip1.at;
 		if(infile.eof()){
 			break;
 		}
-		infile>>rule[count].ip1.fst;
-		infile>>rule[count].ip1.dot1;
-		infile>>rule[count].ip1.snd;
-		infile>>rule[count].ip1.dot2;
-		infile>>rule[count].ip1.trd;
-		infile>>rule[count].ip1.dot3;
-		infile>>rule[count].ip1.fth;
-		infile>>rule[count].ip1.slash;
-		infile>>rule[count].ip1.bit;
-		infile>>rule[count].ip2.fst;
-		infile>>rule[count].ip2.dot1;
-		infile>>rule[count].ip2.snd;
-		infile>>rule[count].ip2.dot2;
-		infile>>rule[count].ip2.trd;
-		infile>>rule[count].ip2.dot3;
-		infile>>rule[count].ip2.fth;
-		infile>>rule[count].ip2.slash;
-		infile>>rule[count].ip2.bit;
-		infile>>rule[count].rule_port1;
-		infile>>rule[count].colon1;
-		infile>>rule[count].rule_port2;
-		infile>>rule[count].rule3;
-		infile>>rule[count].colon2;
-		infile>>rule[count].rule4;
-		infile>>hex>>rule[count].rule_protocol1;
-		infile>>rule[count].slash2;
-		infile>>hex>>rule[count].rule_protocol2;
-		count++;
+		infile>>rule[count1].ip1.at;
+		infile>>dec>>rule[count1].ip1.fst;
+		infile>>rule[count1].ip1.dot1;
+		infile>>dec>>rule[count1].ip1.snd;
+		infile>>rule[count1].ip1.dot2;
+		infile>>dec>>rule[count1].ip1.trd;
+		infile>>rule[count1].ip1.dot3;
+		infile>>dec>>rule[count1].ip1.fth;
+		infile>>rule[count1].ip1.slash;
+		infile>>dec>>rule[count1].ip1.bit;
+		infile>>dec>>rule[count1].ip2.fst;
+		infile>>rule[count1].ip2.dot1;
+		infile>>dec>>rule[count1].ip2.snd;
+		infile>>rule[count1].ip2.dot2;
+		infile>>dec>>rule[count1].ip2.trd;
+		infile>>rule[count1].ip2.dot3;
+		infile>>dec>>rule[count1].ip2.fth;
+		infile>>rule[count1].ip2.slash;
+		infile>>dec>>rule[count1].ip2.bit;
+		infile>>dec>>rule[count1].rule_port1;
+		infile>>rule[count1].colon1;
+		infile>>dec>>rule[count1].rule_port2;
+		infile>>dec>>rule[count1].rule3;
+		infile>>rule[count1].colon2;
+		infile>>dec>>rule[count1].rule4;
+		infile>>hex>>rule[count1].rule_protocol1;
+		infile>>rule[count1].slash2;
+		infile>>hex>>rule[count1].rule_protocol2;
+		count1++;
 	}
 	infile.close();
 }
-void input_data(data_set data[]){			//Êı¾İ¼¯ÊäÈëº¯Êı
+void input_data(data_set data[]){			//æ•°æ®é›†è¾“å…¥å‡½æ•°
 	infile.open("packet1.txt");
 	if(!infile.is_open()){
-		cout<<"ÎÄ¼ş´ò¿ªÊ§°Ü"<<endl;
+		cout<<"æ–‡ä»¶æ‰“å¼€å¤±è´¥"<<endl;
 		system("pause");
 		exit(-1);
 	}
-	int count=0;
 	while(1){
-		infile>>data[count].ip1;
 		if(infile.eof()){
 			break;
 		}
-		infile>>data[count].ip2;
-		infile>>data[count].data_port1;
-		infile>>data[count].data_port2;
-		infile>>hex>>data[count].data_protocol;
-		count++;
+		infile>>dec>>data[count2].ip1;
+		infile>>dec>>data[count2].ip2;
+		infile>>dec>>data[count2].data_port1;
+		infile>>dec>>data[count2].data_port2;
+		infile>>dec>>data[count2].data_protocol;
+		count2++;
 	}
 	infile.close();
 } 
-void rule1_binary(rule_ip k){				//¹æÔò¼¯Ô­IPµØÖ·¶ş½øÖÆ×ª»»º¯Êı 
+void output(rule_set rule[],data_set data[]){
+	outfile.open("ans1.txt");
+	if(!outfile.is_open()){
+		cout<<"æ–‡ä»¶æ‰“å¼€å¤±è´¥ï¼"<<endl;
+		system("pause");
+		exit(-1);
+	}int j;
+	for(int i=0;i<count2-1;i++){
+		for(j=0;j<count1-1;j++){
+			if(fit(rule_dec(rule[j].ip1),data[i].ip1)&&fit(rule_dec(rule[j].ip2),data[i].ip2)&&port(rule[j].rule_port1,rule[j].rule_port2,data[i].data_port1)&&port(rule[j].rule3,rule[j].rule4,data[i].data_port2)&&protocol(rule[j].rule_protocol1,rule[j].rule_protocol2,data[i].data_protocol)){
+				outfile<<j<<endl;
+				break;
+			}
+		}
+		if(j==count1) cout<<"-1"<<endl;
+	}
+	outfile.close();
+}
+long long rule_dec(rule_ip k){				//è§„åˆ™é›†IPåœ°å€äºŒè¿›åˆ¶è½¬æ¢å‡½æ•°
+	int rule[32]; 
 	for(int i=31;i>=24;i--){
-		rule1[i]=(char)(k.fth%2+48);
+		rule[i]=k.fth%2;
 		k.fth/=2;
 	}
 	for(int i=23;i>=16;i--){
-		rule1[i]=(char)(k.trd%2+48);
+		rule[i]=k.trd%2;
 		k.trd/=2;
 	}
 	for(int i=15;i>=8;i--){
-		rule1[i]=(char)(k.snd%2+48);
+		rule[i]=k.snd%2;
 		k.snd/=2;
 	}
 	for(int i=7;i>=0;i--){
-		rule1[i]=(char)(k.fst%2+48);
+		rule[i]=k.fst%2;
 		k.fst/=2;
 	}
-}
-void rule2_binary(rule_ip k){				//¹æÔò¼¯Ä¿µÄIPµØÖ·¶ş½øÖÆ×ª»»º¯Êı
-	for(int i=31;i>=24;i--){
-		rule2[i]=(char)(k.fth%2+48);
-		k.fth/=2;
-	}
-	for(int i=23;i>=16;i--){
-		rule2[i]=(char)(k.trd%2+48);
-		k.trd/=2;
-	}
-	for(int i=15;i>=8;i--){
-		rule2[i]=(char)(k.snd%2+48);
-		k.snd/=2;
-	}
-	for(int i=7;i>=0;i--){
-		rule2[i]=(char)(k.fst%2+48);
-		k.fst/=2;
-	}
-}
-void data1_binary(long long k){				//Êı¾İ¼¯Ô­IPµØÖ·½øÖÆ×ª»»º¯Êı
-	data1[32]='\0';
+	long long dec=0,two=1; 
 	for(int i=31;i>=0;i--){
-		data1[i]=(char)k%2+'0';
-		k/=2;
+		dec+=rule[i]*two;
+		two*=2;
 	}
+	return dec;
 }
-void data2_binary(long long k){				//Êı¾İ¼¯Ä¿µÄIPµØÖ·½øÖÆ×ª»»º¯Êı
-	data2[32]='\0';
-	for(int i=31;i>=0;i--){
-		data2[i]=(char)k%2+'0';
-		k/=2;
-	}
-}
-int match(){								//IPµØÖ·Æ¥Åäº¯Êı 
-	if(strcmp(rule1,data1)==0&&strcmp(rule2,data2)==0) return 1;
+int fit(long long num1,long long num2){		//IPåœ°å€åŒ¹é…å‡½æ•° 
+	if(num1==num2) return 1;
 	else return 0;
 }
-int port(int port1,int port2,int port3){	//¶Ë¿ÚÆ¥Åäº¯Êı 
+int port(int port1,int port2,int port3){	//ç«¯å£åŒ¹é…å‡½æ•° 
 	if(port3>=port1&&port3<=port2) return 1;
 	else return 0;
 }
-int protocol(int pro1,int pro2,int pro3){	//Ğ­ÒéÆ¥Åäº¯Êı 
+int protocol(int pro1,int pro2,int pro3){	//åè®®åŒ¹é…å‡½æ•° 
 	switch(pro2){
 		case 0x00:
 			return 1;
